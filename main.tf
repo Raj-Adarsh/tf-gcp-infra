@@ -30,5 +30,6 @@ resource "google_compute_route" "webapp_internet" {
   network         = google_compute_network.cloud_app.name
   next_hop_gateway = "default-internet-gateway"
   priority        = 1000
+  tags            = ["allow-internet"]
 }
 
