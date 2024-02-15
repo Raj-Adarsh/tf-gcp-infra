@@ -34,4 +34,4 @@ example: *tfplan*
 terraform.rc
 
 #Ignore terraform lock file since this project scope is local development
-#.terraform.lock.hcl
+.terraform.lock.hcl
