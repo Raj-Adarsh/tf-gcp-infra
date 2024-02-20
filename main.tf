@@ -2,7 +2,7 @@ provider "google" {
   project = var.project
   region  = var.region
 }
-
+abc
 resource "google_compute_network" "cloud_app" {
   name                    = var.network_name
   auto_create_subnetworks = false
@@ -32,4 +32,3 @@ resource "google_compute_route" "webapp_internet" {
   priority        = var.internet_route_priority
   tags            = var.internet_access_tags
 }
-
