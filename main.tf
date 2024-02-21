@@ -4,9 +4,9 @@ provider "google" {
 }
 
 resource "google_compute_network" "cloud_app" {
-  name                    = var.network_name
-  auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
+  name                            = var.network_name
+  auto_create_subnetworks         = false
+  routing_mode                    = var.routing_mode
   delete_default_routes_on_create = true
 }
 
@@ -25,11 +25,10 @@ resource "google_compute_subnetwork" "db" {
 }
 
 resource "google_compute_route" "webapp_internet" {
-  name            = var.internet_route_name
-  dest_range      = "0.0.0.0/0"
-  network         = google_compute_network.cloud_app.name
+  name             = var.internet_route_name
+  dest_range       = "0.0.0.0/0"
+  network          = google_compute_network.cloud_app.name
   next_hop_gateway = "default-internet-gateway"
-  priority        = var.internet_route_priority
-  tags            = var.internet_access_tags
+  priority         = var.internet_route_priority
+  tags             = var.internet_access_tags
 }
-
