@@ -47,3 +47,8 @@ variable "internet_access_tags" {
   description = "Tags for VMs that should have internet access."
   type        = list(string)
 }
+
+variable "routing_mode" {
+  description = "Routing region of the VPC"
+  type        = string
+}
