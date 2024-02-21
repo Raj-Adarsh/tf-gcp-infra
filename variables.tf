@@ -49,6 +49,36 @@ variable "internet_access_tags" {
 }
 
 variable "routing_mode" {
-  description = "Routing region of the VPC"
+  description = "Routing region of the VPC."
+  type        = string
+}
+
+variable "image" {
+  description = "Packer Custom Image."
+  type        = string
+}
+
+variable "type" {
+  description = "Disk Type of boot Disk."
+  type        = string
+}
+
+variable "disk_size" {
+  description = "Disk Size of the machine."
+  type        = number
+}
+
+variable "gcloud_service_email" {
+  description = "Gcloud Service Email."
+  type        = string
+}
+
+variable "machine_type" {
+  description = "Machine type of the VM."
+  type        = string
+}
+
+variable "zone" {
+  description = "Zone of the VM."
   type        = string
 }
