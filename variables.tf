@@ -43,7 +43,7 @@ variable "internet_route_priority" {
   type        = number
 }
 
-variable "internet_access_tags" {
+variable "access_tags" {
   description = "Tags for VMs that should have internet access."
   type        = list(string)
 }

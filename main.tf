@@ -32,7 +32,7 @@ resource "google_compute_route" "webapp_internet" {
   network          = google_compute_network.cloud_app.name
   next_hop_gateway = "default-internet-gateway"
   priority         = var.internet_route_priority
-  tags             = var.internet_access_tags
+  tags             = var.access_tags
   depends_on = [google_compute_network.cloud_app]
 }
 
@@ -49,7 +49,6 @@ resource "google_compute_firewall" "allow_http" {
   direction    = "INGRESS"
   priority     = 999
   source_ranges = ["0.0.0.0/0"]
-  #target_tags  = var.internet_access_tags
   depends_on = [google_compute_network.cloud_app]
 }
 
@@ -149,7 +148,7 @@ resource "google_compute_instance" "webapp_compute_engine" {
   machine_type = var.machine_type
   zone         = var.zone
 
-  tags = var.internet_access_tags
+  tags = var.access_tags
   boot_disk {
     initialize_params {
       image = var.image
@@ -177,7 +176,6 @@ resource "google_compute_instance" "webapp_compute_engine" {
   metadata = {
   startup-script = <<-EOT
     #!/bin/bash
-    # Fetch secrets from Google Cloud Secret Manager
     if [ ! -f /etc/webapp.flag ]; then
       echo "DB_USER=webapp" > /etc/webapp.env
       echo "DB_PASSWORD=${random_password.db_password.result}" >> /etc/webapp.env
@@ -196,86 +194,6 @@ resource "google_compute_instance" "webapp_compute_engine" {
     google_sql_database_instance.webapp_instance
   ]
 }
-
-#test1
-resource "google_compute_instance" "webapp_compute_engine_test-1" {
-  name         = "webapp-compute-engine-test-1"
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  #tags = var.internet_access_tags
-  boot_disk {
-    initialize_params {
-      image = var.image
-      type  = var.type
-      size  = var.disk_size
-      
-    }
-  }
-
-  network_interface {
-    network    = google_compute_network.cloud_app.id
-    subnetwork = google_compute_subnetwork.webapp.id
-
-    access_config {
-      // Ephemeral IP will be assigned by GCP
-    }
-  }
-
-  service_account {
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    email  = var.gcloud_service_email
-    scopes = ["cloud-platform"]
-  }
-
-  metadata = {
-  startup-script = <<-EOT
-    #!/bin/bash
-    # Fetch secrets from Google Cloud Secret Manager
-    if [ ! -f /etc/webapp.flag ]; then
-      #DB_USER=$(gcloud secrets versions access latest --secret="db-username")
-      #DB_PASSWORD=$(gcloud secrets versions access latest --secret="db-password")
-      #DB_NAME=$(gcloud secrets versions access latest --secret="db-name")
-      #DB_HOST=$(gcloud sql instances describe [INSTANCE_ID] --format='get(ipAddresses[0].ipAddress)')
-
-      echo "DB_USER=webapp" > /etc/webapp.env
-      echo "DB_PASSWORD=${random_password.db_password.result}" >> /etc/webapp.env
-      echo "DB_NAME=webapp" >> /etc/webapp.env
-      echo "DB_HOST=${google_sql_database_instance.webapp_instance.ip_address[0].ip_address}" >> /etc/webapp.env
-      
-      #TMP_SERVICE_FILE="/tmp/webapp.service"
-
-      #sudo cp /etc/systemd/system/webapp.service "$TMP_SERVICE_FILE"
-      
-      #REMOVE SUDO
-      # Replace placeholders with actual values in the temporary file
-      #sudo sed -i "s|\\$${DB_USER}|$${DB_USER}|g" "$$TMP_SERVICE_FILE"
-      #sudo sed -i "s|\\$${DB_HOST}|$${DB_HOST}|g" "$$TMP_SERVICE_FILE"
-      #sudo sed -i "s|\\$${DB_PASSWORD}|$${DB_PASSWORD}|g" "$$TMP_SERVICE_FILE"
-      #sudo sed -i "s|\\$${DB_NAME}|$${DB_NAME}|g" "$$TMP_SERVICE_FILE"
-
-      #echo "DB_USER=$DB_USER" > /etc/webapp.env
-      #echo "DB_PASSWORD=$DB_PASSWORD" >> /etc/webapp.env
-      #echo "DB_NAME=$DB_NAME" >> /etc/webapp.env
-      #echo "DB_HOST=$DB_HOST" >> /etc/webapp.env
-
-      #sudo mv "$TMP_SERVICE_FILE" /etc/systemd/system/webapp.service
-      sudo chown csye6225:csye6225 /etc/systemd/system/webapp.service
-      sudo touch /etc/webapp.flag
-    else
-      echo "/etc/webapp.flag exists, skipping script execution."
-    fi
-  EOT
-}
-
-  depends_on = [
-    google_compute_network.cloud_app,
-    #google_secret_manager_secret_version.db_username_version,
-    google_secret_manager_secret_version.db_password_version,
-    google_sql_database_instance.webapp_instance
-  ]
-}
-
 
 resource "google_compute_firewall" "allow_webapp_egress_to_cloud_sql" {
   name    = "allow-webapp-egress-to-cloud-sql"
@@ -290,7 +208,7 @@ resource "google_compute_firewall" "allow_webapp_egress_to_cloud_sql" {
   destination_ranges  = ["0.0.0.0/0"]
   priority            = 900
 
-  target_tags   = var.internet_access_tags
+  target_tags   = var.access_tags
   depends_on = [google_sql_database_instance.webapp_instance]
 }
 
