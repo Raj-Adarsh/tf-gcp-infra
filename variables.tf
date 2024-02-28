@@ -82,3 +82,44 @@ variable "zone" {
   description = "Zone of the VM."
   type        = string
 }
+
+
+variable "db_disk_size" {
+  description = "SQL instance disk size."
+  type        = number
+}
+
+variable "db_disk_type" {
+  description = "SQL instance disk type"
+  type        = string
+}
+
+variable "ipv4_enabled" {
+  description = "IPv4 enabled."
+  type        = bool
+}
+
+variable "db_region" {
+  description = "SQL instance region."
+  type        = string
+}
+
+variable "deletion_protection" {
+  description = "Deletion protection of the sql instance."
+  type        = bool
+}
+
+variable "availability_type" {
+  description = "Availibility Type of the sql instance."
+  type        = string
+}
+  
+variable "tier" {
+  description = "Tier of SQL instance."
+  type        = string
+}
+
+variable "database_version" {
+  description = "PostgresQL version."
+  type        = string
+}
