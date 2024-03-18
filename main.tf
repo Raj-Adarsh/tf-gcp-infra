@@ -195,6 +195,16 @@ resource "google_compute_instance" "webapp_compute_engine" {
   ]
 }
 
+resource "google_dns_record_set" "cloud_dns" {
+  name         = var.custom_dns_name
+  type         = "A"
+  ttl          = 120
+  managed_zone = var.dns_zone
+  rrdatas      = [google_compute_instance.webapp_compute_engine.network_interface[0].access_config[0].nat_ip]
+
+  depends_on = [google_compute_instance.webapp_compute_engine]
+}
+
 resource "google_compute_firewall" "allow_webapp_egress_to_cloud_sql" {
   name    = "allow-webapp-egress-to-cloud-sql"
   network = google_compute_network.cloud_app.name
