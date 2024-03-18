@@ -123,3 +123,14 @@ variable "database_version" {
   description = "PostgresQL version."
   type        = string
 }
+
+variable "custom_dns_name" {
+  description = "Custom DNS name."
+  type        = string
+}
+
+
+variable "dns_zone" {
+  description = "DNS zone."
+  type        = string
+}
