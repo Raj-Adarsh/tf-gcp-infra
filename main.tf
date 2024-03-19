@@ -169,7 +169,7 @@ resource "google_compute_instance" "webapp_compute_engine" {
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    email  = var.gcloud_service_email
+    email  = google_service_account.service_account.email
     scopes = ["cloud-platform"]
   }
 
@@ -234,4 +234,25 @@ resource "google_compute_firewall" "deny_all" {
     protocol = "all"
   }
   depends_on = [google_sql_database_instance.webapp_instance] 
+}
+
+resource "google_service_account" "service_account" {
+  account_id   = var.account_id
+  display_name = "Service Account"
+  project      = var.project
+  create_ignore_already_exists = true
+}
+
+resource "google_project_iam_member" "logging_admin" {
+  project = var.project
+  role    = "roles/logging.admin"
+
+  member = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_project_iam_member" "monitoring_metric_writer" {
+  project = var.project
+  role    = "roles/monitoring.metricWriter"
+
+  member = "serviceAccount:${google_service_account.service_account.email}"
 }

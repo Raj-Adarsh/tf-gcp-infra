@@ -68,10 +68,10 @@ variable "disk_size" {
   type        = number
 }
 
-variable "gcloud_service_email" {
-  description = "Gcloud Service Email."
-  type        = string
-}
+#variable "gcloud_service_email" {
+#  description = "Gcloud Service Email."
+#  type        = string
+#}
 
 variable "machine_type" {
   description = "Machine type of the VM."
@@ -132,5 +132,11 @@ variable "custom_dns_name" {
 
 variable "dns_zone" {
   description = "DNS zone."
+  type        = string
+}
+
+
+variable "account_id" {
+  description = "Service Account ID."
   type        = string
 }
