@@ -222,19 +222,19 @@ resource "google_compute_firewall" "allow_webapp_egress_to_cloud_sql" {
   depends_on = [google_sql_database_instance.webapp_instance]
 }
 
-resource "google_compute_firewall" "deny_all" {
-  name                    = "deny-all"
-  network                 = google_compute_network.cloud_app.id
-  direction               = "EGRESS"
-  destination_ranges      = ["0.0.0.0/0"]
-  priority                = 1000
-  project                 = var.project
+#resource "google_compute_firewall" "deny_all" {
+#  name                    = "deny-all"
+#  network                 = google_compute_network.cloud_app.id
+#  direction               = "EGRESS"
+#  destination_ranges      = ["0.0.0.0/0"]
+#  priority                = 1000
+#  project                 = var.project
 
-  deny {
-    protocol = "all"
-  }
-  depends_on = [google_sql_database_instance.webapp_instance] 
-}
+#  deny {
+#    protocol = "all"
+#  }
+#  depends_on = [google_sql_database_instance.webapp_instance] 
+#}
 
 resource "google_service_account" "service_account" {
   account_id   = var.account_id
