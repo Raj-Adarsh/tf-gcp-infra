@@ -140,3 +140,14 @@ variable "account_id" {
   description = "Service Account ID."
   type        = string
 }
+
+variable "ttl" {
+  description = "TTL for A record."
+  type        = number
+}
+
+variable "scopes" {
+  description = "The scopes for the service account"
+  type        = list(string)
+  default     = ["https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/logging.admin"]
+}

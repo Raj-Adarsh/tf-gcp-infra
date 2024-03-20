@@ -170,7 +170,8 @@ resource "google_compute_instance" "webapp_compute_engine" {
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email  = google_service_account.service_account.email
-    scopes = ["cloud-platform"]
+    #scopes = ["cloud-platform"]
+    scopes = var.scopes
   }
 
   metadata = {
@@ -198,7 +199,7 @@ resource "google_compute_instance" "webapp_compute_engine" {
 resource "google_dns_record_set" "cloud_dns" {
   name         = var.custom_dns_name
   type         = "A"
-  ttl          = 120
+  ttl          = var.ttl
   managed_zone = var.dns_zone
   rrdatas      = [google_compute_instance.webapp_compute_engine.network_interface[0].access_config[0].nat_ip]
 
@@ -248,6 +249,10 @@ resource "google_project_iam_member" "logging_admin" {
   role    = "roles/logging.admin"
 
   member = "serviceAccount:${google_service_account.service_account.email}"
+
+  lifecycle {
+    ignore_changes = [member]
+  }
 }
 
 resource "google_project_iam_member" "monitoring_metric_writer" {
@@ -255,4 +260,8 @@ resource "google_project_iam_member" "monitoring_metric_writer" {
   role    = "roles/monitoring.metricWriter"
 
   member = "serviceAccount:${google_service_account.service_account.email}"
+
+  lifecycle {
+    ignore_changes = [member]
+  }
 }
