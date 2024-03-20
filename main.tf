@@ -244,24 +244,28 @@ resource "google_service_account" "service_account" {
   create_ignore_already_exists = true
 }
 
-resource "google_project_iam_member" "logging_admin" {
+resource "google_project_iam_binding" "logging_admin" {
   project = var.project
   role    = "roles/logging.admin"
 
-  member = "serviceAccount:${google_service_account.service_account.email}"
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
 
   lifecycle {
-    ignore_changes = [member]
+    ignore_changes = [members]
   }
 }
 
-resource "google_project_iam_member" "monitoring_metric_writer" {
+resource "google_project_iam_binding" "monitoring_metric_writer" {
   project = var.project
   role    = "roles/monitoring.metricWriter"
 
-  member = "serviceAccount:${google_service_account.service_account.email}"
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
 
   lifecycle {
-    ignore_changes = [member]
+    ignore_changes = [members]
   }
 }
