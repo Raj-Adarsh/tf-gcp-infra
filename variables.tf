@@ -149,5 +149,5 @@ variable "ttl" {
 variable "scopes" {
   description = "The scopes for the service account"
   type        = list(string)
-  default     = ["https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/logging.admin"]
+  default     = ["https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/logging.admin", "https://www.googleapis.com/auth/pubsub"]
 }

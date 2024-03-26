@@ -170,7 +170,6 @@ resource "google_compute_instance" "webapp_compute_engine" {
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email  = google_service_account.service_account.email
-    #scopes = ["cloud-platform"]
     scopes = var.scopes
   }
 
@@ -223,20 +222,6 @@ resource "google_compute_firewall" "allow_webapp_egress_to_cloud_sql" {
   depends_on = [google_sql_database_instance.webapp_instance]
 }
 
-#resource "google_compute_firewall" "deny_all" {
-#  name                    = "deny-all"
-#  network                 = google_compute_network.cloud_app.id
-#  direction               = "EGRESS"
-#  destination_ranges      = ["0.0.0.0/0"]
-#  priority                = 1000
-#  project                 = var.project
-
-#  deny {
-#    protocol = "all"
-#  }
-#  depends_on = [google_sql_database_instance.webapp_instance] 
-#}
-
 resource "google_service_account" "service_account" {
   account_id   = var.account_id
   display_name = "Service Account"
@@ -249,7 +234,8 @@ resource "google_project_iam_binding" "logging_admin" {
   role    = "roles/logging.admin"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}"
+    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${google_service_account.service_account_cloud_function.email}"
   ]
 
   lifecycle {
@@ -262,9 +248,124 @@ resource "google_project_iam_binding" "monitoring_metric_writer" {
   role    = "roles/monitoring.metricWriter"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}"
+    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${google_service_account.service_account_cloud_function.email}"
   ]
 
+  lifecycle {
+    ignore_changes = [members]
+  }
+}
+
+resource "google_service_account" "service_account_cloud_function" {
+  account_id = "cloud-function"
+  display_name = "CF Service Account"
+  project      = var.project
+  create_ignore_already_exists = true
+}
+
+resource "google_pubsub_topic" "pubsub_topic" {
+  name = "verify_email"
+}
+
+#Can remove this, update cloud function manually
+resource "google_storage_bucket" "bucket" {
+  name = "${var.project}-gcloud-serverless-bucket"
+  location = "US"
+  uniform_bucket_level_access = true
+}
+
+resource "google_storage_bucket_object" "object" {
+  name   = "serverless.zip"
+  bucket = google_storage_bucket.bucket.name
+  source = "/Users/adarshraj/Downloads/serverless.zip"
+}
+
+resource "google_cloudfunctions2_function" "cloud_function" {
+  name = "serverless"
+  location = var.region
+  description = "A serverless function to send out emails"
+
+  build_config {
+    runtime = "go121"
+    entry_point = "SendVerificationEmail"
+    source {
+      storage_source {
+        bucket = google_storage_bucket.bucket.name
+        object = google_storage_bucket_object.object.name
+      }
+    }
+  }
+
+  service_config {
+    max_instance_count  = 0
+    min_instance_count = 1
+    available_memory    = "256M"
+    timeout_seconds     = 60
+    max_instance_request_concurrency = 80
+    available_cpu = "1"
+    environment_variables = {
+        DB_USER     = "webapp"
+        DB_PASSWORD = "${random_password.db_password.result}"
+        DB_NAME     = "webapp"
+        DB_HOST     = "${google_sql_database_instance.webapp_instance.ip_address[0].ip_address}"
+        SENDGRID_API_KEY = "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"
+    }
+    ingress_settings = "ALLOW_INTERNAL_ONLY"
+    all_traffic_on_latest_revision = true
+    service_account_email = google_service_account.service_account_cloud_function.email
+    vpc_connector = google_vpc_access_connector.vpc_connector.name
+  }
+
+  event_trigger {
+    trigger_region = var.region
+    event_type = "google.cloud.pubsub.topic.v1.messagePublished"
+    pubsub_topic = google_pubsub_topic.pubsub_topic.id
+    #retry_policy = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.service_account_cloud_function.email
+  }
+
+  depends_on = [google_sql_database_instance.webapp_instance]
+}
+
+resource "google_cloud_run_service_iam_binding" "cloud_run_invoker" {
+  project  = google_cloudfunctions2_function.cloud_function.project
+  location = google_cloudfunctions2_function.cloud_function.location
+  service  = google_cloudfunctions2_function.cloud_function.name
+  role     = "roles/run.invoker"
+  members = [
+    "serviceAccount:${google_service_account.service_account_cloud_function.email}"
+  ]
+  lifecycle {
+    ignore_changes = [members]
+  }
+}
+
+resource "google_project_iam_binding" "service_account_sql_client" {
+  project = var.project
+  role    = "roles/cloudsql.client"
+  members = [
+    "serviceAccount:${google_service_account.service_account_cloud_function.email}"
+  ]
+  lifecycle {
+    ignore_changes = [members]
+  }
+}
+
+resource "google_vpc_access_connector" "vpc_connector" {
+  name          = "vpc-connector"
+  project       = var.project
+  region        = var.region
+  network       = google_compute_network.cloud_app.name
+  ip_cidr_range = "10.0.8.0/28"
+}
+
+resource "google_project_iam_binding" "pubsub_publisher" {
+  project = var.project
+  role    = "roles/pubsub.publisher"
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
   lifecycle {
     ignore_changes = [members]
   }
