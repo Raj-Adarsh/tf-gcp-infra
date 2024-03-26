@@ -151,3 +151,18 @@ variable "scopes" {
   type        = list(string)
   default     = ["https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/logging.admin", "https://www.googleapis.com/auth/pubsub"]
 }
+
+variable "sendgrid_key" {
+  description = "SendGrid API Key"
+  type        = string
+}
+
+variable "zip_bucket" {
+  description = "The path for the cloud function zip"
+  type        = string
+}
+
+variable "vpc_connector_ip" {
+  description = "The IP range for VPC connector"
+  type        = string
+}
