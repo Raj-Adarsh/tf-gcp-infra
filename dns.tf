@@ -3,7 +3,7 @@ resource "google_dns_record_set" "cloud_dns" {
   type         = "A"
   ttl          = var.ttl
   managed_zone = var.dns_zone
-  rrdatas      = [google_compute_instance.webapp_compute_engine.network_interface[0].access_config[0].nat_ip]
+  rrdatas      = [google_compute_address.lb_ip.address]
 
-  depends_on = [google_compute_instance.webapp_compute_engine]
+  # depends_on = [google_compute_instance.webapp_compute_engine]
 }
