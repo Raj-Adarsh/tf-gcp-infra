@@ -227,3 +227,13 @@ variable "target" {
   description = "The target utilisation for autoscaler to scale in-out."
   type        = number
 }
+
+variable "health_check_ip1" {
+  description = "The Health checkp IP 1."
+  type        = string
+}
+
+variable "health_check_ip2" {
+  description = "The Health checkp IP 2"
+  type        = string
+}

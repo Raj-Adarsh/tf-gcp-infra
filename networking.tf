@@ -38,7 +38,7 @@ resource "google_compute_firewall" "allow_http" {
   }
   direction    = "INGRESS"
   priority     = 999
-  source_ranges = [google_compute_global_forwarding_rule.webapp_forwarding_rule.ip_address, "130.211.0.0/22", "35.191.0.0/16"]
+  source_ranges = [google_compute_global_forwarding_rule.webapp_forwarding_rule.ip_address, var.health_check_ip1, var.health_check_ip2]
   target_tags             = var.access_tags
 }
 
