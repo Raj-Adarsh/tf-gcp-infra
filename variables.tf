@@ -168,3 +168,42 @@ variable "vpc_connector_ip" {
   description = "The IP range for VPC connector"
   type        = string
 }
+
+
+variable "locality_lb_policy" {
+  description = "The LB policy"
+  type        = string
+}
+
+variable "health_check_healthy_th"{
+  description = "The healthy threshold of health-check"
+  type        = number
+}
+
+variable "health_check_unhealthy_th" {
+  description = "The unhealthy threshold of health-check"
+  type        = number
+}
+
+
+variable "health_check_timeout_sec" {
+  description = "The health-check timeout in seconds"
+  type        = number
+}
+
+
+variable "health_check_interval_sec" {
+  description = "The health-check interval in seconds"
+  type        = number
+}
+
+
+variable "balancing_mode" {
+  description = "The load balancing mode of backend."
+  type        = string
+}
+
+variable "capacity_scaler" {
+  description = "The scaler capacity of backend."
+  type        = number
+}
