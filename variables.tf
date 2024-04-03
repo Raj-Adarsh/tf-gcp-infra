@@ -207,3 +207,23 @@ variable "capacity_scaler" {
   description = "The scaler capacity of backend."
   type        = number
 }
+
+
+variable "max_replicas" {
+  description = "The autoscaler max number of instances."
+  type        = number
+}
+
+
+
+variable "min_replicas" {
+  description = "The autoscaler min number of instances."
+  type        = number
+}
+
+
+
+variable "target" {
+  description = "The target utilisation for autoscaler to scale in-out."
+  type        = number
+}

@@ -38,7 +38,8 @@ resource "google_compute_firewall" "allow_http" {
   }
   direction    = "INGRESS"
   priority     = 999
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = [google_compute_global_forwarding_rule.webapp_forwarding_rule.ip_address, "130.211.0.0/22", "35.191.0.0/16"]
+  target_tags             = var.access_tags
 }
 
 resource "google_compute_firewall" "deny_ssh" {
@@ -93,33 +94,3 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_services_range.name]
 }
-
-# resource "google_compute_subnetwork" "proxy_only" {
-#   name          = "proxy-only-subnet"
-#   ip_cidr_range = "10.129.0.0/23"
-#   network       = google_compute_network.cloud_app.self_link
-#   purpose       = "REGIONAL_MANAGED_PROXY"
-#   region        = var.region
-#   role          = "ACTIVE"
-# }
-
-# resource "google_compute_firewall" "allow_proxy" {
-#   name = "fw-allow-proxies"
-#   # allow {
-#   #   ports    = ["443"]
-#   #   protocol = "tcp"
-#   # }
-#   allow {
-#     ports    = ["80"]
-#     protocol = "tcp"
-#   }
-#   allow {
-#     ports    = ["8080"]
-#     protocol = "tcp"
-#   }
-#   direction     = "INGRESS"
-#   network       = google_compute_network.cloud_app.self_link
-#   priority      = 999
-#   source_ranges = ["10.129.0.0/23"]
-#   target_tags   = var.access_tags
-# }
