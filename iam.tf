@@ -101,7 +101,6 @@ resource "google_kms_crypto_key_iam_binding" "cloudsql_binding" {
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 
   members = [
-    # "serviceAccount:service-${var.project}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
   ]
 }
@@ -113,6 +112,5 @@ resource "google_kms_crypto_key_iam_binding" "gcs_binding" {
 
   members = [
     "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com",
-    #"serviceAccount:service-1052601371221@gs-project-accounts.iam.gserviceaccount.com",
   ]
 }

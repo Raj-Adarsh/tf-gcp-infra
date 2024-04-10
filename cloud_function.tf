@@ -31,6 +31,8 @@ resource "google_cloudfunctions2_function" "cloud_function" {
         DB_NAME     = "webapp"
         DB_HOST     = "${google_sql_database_instance.webapp_instance.ip_address[0].ip_address}"
         SENDGRID_API_KEY = var.sendgrid_key
+        TEMPLATE_ID      = var.template_id
+        VERIFICATION_URL = var.verify_url
     }
     ingress_settings = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
