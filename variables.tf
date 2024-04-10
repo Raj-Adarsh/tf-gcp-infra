@@ -237,3 +237,13 @@ variable "health_check_ip2" {
   description = "The Health checkp IP 2"
   type        = string
 }
+
+variable "keyring_name" {
+  description = "The name of the Key Ring"
+  type        = string
+}
+
+variable "rotation_period" {
+  description = "The roatation period of the key"
+  type        = string
+}
