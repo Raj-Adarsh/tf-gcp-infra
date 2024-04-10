@@ -1,5 +1,5 @@
 resource "google_compute_region_instance_template" "webapp_template" {
-  name   = "webapp-template"
+  name_prefix  = "instance-template-"
   machine_type  = var.machine_type
   # provider = google-beta
 
@@ -34,6 +34,10 @@ resource "google_compute_region_instance_template" "webapp_template" {
     provisioning_model  = "STANDARD"
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   service_account {
     email  = google_service_account.service_account.email
     scopes = var.scopes
@@ -55,8 +59,8 @@ resource "google_compute_region_instance_template" "webapp_template" {
 }
 
 resource "google_compute_region_instance_group_manager" "webapp_group" {
-  name               = "webapp-group"
-  base_instance_name = "webapp"
+  name               = "webapp-group-manager"
+  base_instance_name = "webapp-vm"
   region           = var.region
 
   version {
