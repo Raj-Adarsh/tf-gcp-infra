@@ -247,3 +247,18 @@ variable "rotation_period" {
   description = "The roatation period of the key"
   type        = string
 }
+
+variable "template_id" {
+  description = "The template ID of SendGrid"
+  type        = string
+}
+
+variable "verify_url" {
+  description = "The email verification base url"
+  type        = string
+}
+
+variable "purpose" {
+  description = "The purpose of the key"
+  type        = string
+}
