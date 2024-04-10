@@ -1,7 +1,9 @@
 resource "google_compute_region_instance_template" "webapp_template" {
   name   = "webapp-template"
   machine_type  = var.machine_type
+  # provider = google-beta
 
+  depends_on = [google_kms_crypto_key_iam_binding.compute_key_binding]
   tags = var.access_tags
 
   disk {
@@ -10,6 +12,9 @@ resource "google_compute_region_instance_template" "webapp_template" {
     boot         = true
     disk_size_gb = var.disk_size
     disk_type    = var.type
+    disk_encryption_key {
+      kms_key_self_link = google_kms_crypto_key.compute_key.id
+    }
   }
 
   region = var.region

@@ -1,3 +1,5 @@
+data "google_project" "project" {} 
+
 resource "google_service_account" "service_account" {
   account_id   = var.account_id
   display_name = "Service Account"
@@ -73,4 +75,44 @@ resource "google_project_iam_binding" "pubsub_publisher" {
   lifecycle {
     ignore_changes = [members]
   }
+}
+
+resource "google_kms_key_ring_iam_binding" "key_ring" {
+  key_ring_id = google_kms_key_ring.keyring.id
+  role        = "roles/cloudkms.admin"
+
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
+
+resource "google_kms_crypto_key_iam_binding" "compute_key_binding" {
+  crypto_key_id = google_kms_crypto_key.compute_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    "serviceAccount:service-${data.google_project.project.number}@compute-system.iam.gserviceaccount.com",
+  ]
+}
+
+resource "google_kms_crypto_key_iam_binding" "cloudsql_binding" {
+  crypto_key_id = google_kms_crypto_key.cloudsql_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    # "serviceAccount:service-${var.project}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+  ]
+}
+
+
+resource "google_kms_crypto_key_iam_binding" "gcs_binding" {
+  crypto_key_id = google_kms_crypto_key.gcs_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com",
+    #"serviceAccount:service-1052601371221@gs-project-accounts.iam.gserviceaccount.com",
+  ]
 }
