@@ -1,8 +1,11 @@
 # tf-gcp-infra
-A Terraform Repository to handle infrastructure for GCP services
+    A repository to provision infrastructure for GCP services through Terraform.
+    The IaC will provision the following Google Cloud Services - VPC, Compute Engine, Cloud SQL, Cloud Function, DNS, Load balancer, AutoScaler, SSL, Logging, CMEK.
+    The Github repo has workflow ensure Continuous Integration.
+    You will need to use your own terrafor.tfvars file with appropriate values to populate the variables
 
 Set up Google Cloud (MAC)
->  sudo tar -xvzf google-cloud-cli-463.0.0-darwin-x86_64.tar.gz -C /usr/local
+> sudo tar -xvzf google-cloud-cli-463.0.0-darwin-x86_64.tar.gz -C /usr/local
 >  cd /usr/local/google-cloud-sdk
 >  ./install.sh
 >  gcloud auth login
@@ -16,7 +19,7 @@ Install Terraform (MAC)
 > brew upgrade hashicorp/tap/terraform
 > terraform -help
 
-Initialise a terraform repo with main.tf file:
+Initialise a terraform repo and depploy:
 > terraform init
 > terrraform validate
 > terraform plan
@@ -25,5 +28,5 @@ Initialise a terraform repo with main.tf file:
 To destroy the resouce
 > terraform destroy
 
-Terraofrm credenrial
+Terraofrm credential
 > gcloud auth application-default login
