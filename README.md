@@ -1,6 +1,7 @@
 # tf-gcp-infra
     A repository to provision infrastructure for GCP services through Terraform.
     The IaC will provision the following Google Cloud Services - VPC, Compute Engine, Cloud SQL, Cloud Function, DNS, Load balancer, AutoScaler, SSL, Logging, CMEK.
+    The Github repo has workflow ensure Continuous Integration.
     You will need to use your own terrafor.tfvars file with appropriate values to populate the variables
 
 Set up Google Cloud (MAC)
